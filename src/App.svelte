@@ -1,6 +1,6 @@
 <script>
-    import BrowserInfo from "./BrowserInfo.svelte";
-    import Update from "./Update.svelte";
+    import BrowserInfo from "./lib/BrowserInfo.svelte";
+    import Update from "./lib/Update.svelte";
 </script>
 
     <BrowserInfo />

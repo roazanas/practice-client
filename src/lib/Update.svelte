@@ -1,6 +1,4 @@
 <script>
-    import { onMount } from "svelte";
-
     let socket;
     let messages = $state([]);
     let input = $state('');
@@ -29,7 +27,6 @@
         };
     })
 
-
     function sendMessage() {
         if (socket && socket.readyState === WebSocket.OPEN) {
             socket.send(input);
@@ -38,20 +35,18 @@
 
     }
 
-    function printMessages(){
-        messages.forEach(element => {
-            console.log(element);
-        });
+    // function printMessages(){
+    //     messages.forEach(element => {
+    //         console.log(element);
+    //     });
         
-    }
+    // }
 </script>
 
-<h1>WebSocket Chat</h1>
-
-<input bind:value={input} placeholder="Введите сообщение..." />
+<!-- <input bind:value={input} placeholder="Введите сообщение..." />
 <button onclick={sendMessage}>Отправить</button>
 
-<button onclick={printMessages}>Вывести сообщения в консоль</button>
+<button onclick={printMessages}>Вывести сообщения в консоль</button> -->
 
 <style>
 
