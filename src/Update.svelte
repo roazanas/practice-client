@@ -53,12 +53,6 @@
 
 <button onclick={printMessages}>Вывести сообщения в консоль</button>
 
-<ul>
-    {#each messages.values() as msg}
-        <li>{msg}</li>
-    {/each}
-</ul>
-
 <style>
 
 </style>
