@@ -1,17 +1,46 @@
 <script>
     let socket;
-    let messages = $state([]);
+    let messages = [];
     let input = $state('');
+    let updateIsReady = $state(false);
+
+    let myVersion = "1.0.0"; // Из файла
+
+    function CheckUpdates(version){
+        const message = JSON.stringify({ key: "update", version });
+        sendMessage(message);
+
+        // ...
+
+        updateIsReady = true;
+    }
+
+    function InstallUpdates(){
+        return true;
+    }
 
     $effect(() => {
         socket = new WebSocket("ws://localhost:8000/ws");
 
         socket.onopen = () => {
             console.log("WebSocket connected");
+
+            CheckUpdates(`"version": ${myVersion}`);
+
+            if (updateIsReady) {
+                InstallUpdates();
+            }
+
         };
 
         socket.onmessage = (event) => {
-            messages = [...messages, event.data];
+            const data = JSON.parse(event.data);
+            if ('version' in data){
+                console.log("Пришла версия: ", data.version);
+            }
+
+            messages = [...messages, data];
+
         };
 
         socket.onclose = () => {
@@ -27,26 +56,26 @@
         };
     })
 
-    function sendMessage() {
+    function sendMessage(msg) {
         if (socket && socket.readyState === WebSocket.OPEN) {
-            socket.send(input);
+            msg = input; // Temp
+            socket.send(msg);
             input = '';
         }
-
     }
 
-    // function printMessages(){
-    //     messages.forEach(element => {
-    //         console.log(element);
-    //     });
+    function printMessages(){
+        messages.forEach(element => {
+            console.log(element);
+        });
         
-    // }
+    }
 </script>
 
-<!-- <input bind:value={input} placeholder="Введите сообщение..." />
+<input bind:value={input} placeholder="Введите сообщение..." />
 <button onclick={sendMessage}>Отправить</button>
 
-<button onclick={printMessages}>Вывести сообщения в консоль</button> -->
+<button onclick={printMessages}>Вывести сообщения в консоль</button>
 
 <style>
 
