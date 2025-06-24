@@ -6,7 +6,6 @@
     <BrowserInfo />
     <Update />
 
-
 <style>
 
 </style>

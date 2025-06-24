@@ -2,7 +2,7 @@
     import { onMount } from "svelte";
 
     let socket;
-    let messages = [];
+    let messages = $state([]);
     let input = $state('');
 
     $effect(() => {
@@ -35,13 +35,29 @@
             socket.send(input);
             input = '';
         }
+
+    }
+
+    function printMessages(){
+        messages.forEach(element => {
+            console.log(element);
+        });
+        
     }
 </script>
 
 <h1>WebSocket Chat</h1>
 
-<input value={input} placeholder="Введите сообщение..." />
+<input bind:value={input} placeholder="Введите сообщение..." />
 <button onclick={sendMessage}>Отправить</button>
+
+<button onclick={printMessages}>Вывести сообщения в консоль</button>
+
+<ul>
+    {#each messages.values() as msg}
+        <li>{msg}</li>
+    {/each}
+</ul>
 
 <style>
 
