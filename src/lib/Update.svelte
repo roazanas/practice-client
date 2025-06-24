@@ -1,82 +1,74 @@
 <script>
-    let socket;
-    let messages = [];
-    let input = $state('');
-    let updateIsReady = $state(false);
+  let socket;
+  let messages = [];
+  let input = $state("");
+  let updateIsReady = $state(false);
 
-    let myVersion = "1.0.0"; // Из файла
+  let myVersion = "1.0.0"; // Из файла
+  let hash_from = "83b67cb"; // временная затычка, потом брать из git rev-parse HEAD
 
-    function CheckUpdates(version){
-        const message = JSON.stringify({ key: "update", version });
-        sendMessage(message);
+  function checkUpdates(hash_from) {
+    const message = JSON.stringify({ type: "check-update", hash_from });
+    sendMessage(message);
 
-        // ...
+    // ...
+    // updateIsReady = брать из статуса в msg
+    updateIsReady = true;
+  }
 
-        updateIsReady = true;
+  function installUpdates(hash_from) {
+    const message = JSON.stringify({ type: "get-update", hash_from });
+    sendMessage(message);
+  }
+
+  $effect(() => {
+    socket = new WebSocket("ws://localhost:8000/ws");
+
+    socket.onopen = () => {
+      console.log("WebSocket connected");
+
+      checkUpdates(hash_from);
+      if (updateIsReady) {
+        installUpdates(hash_from);
+      }
+    };
+
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+
+      messages = [...messages, data];
+      printMessages();
+    };
+
+    socket.onclose = () => {
+      console.log("WebSocket closed");
+    };
+
+    if (!socket.CONNECTING) {
+      console.log();
     }
 
-    function InstallUpdates(){
-        return true;
+    return () => {
+      socket?.close();
+    };
+  });
+
+  function sendMessage(msg) {
+    if (socket && socket.readyState === WebSocket.OPEN) {
+      socket.send(msg);
+      input = "";
     }
+  }
 
-    $effect(() => {
-        socket = new WebSocket("ws://localhost:8000/ws");
-
-        socket.onopen = () => {
-            console.log("WebSocket connected");
-
-            CheckUpdates(`"version": ${myVersion}`);
-
-            if (updateIsReady) {
-                InstallUpdates();
-            }
-
-        };
-
-        socket.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            if ('version' in data){
-                console.log("Пришла версия: ", data.version);
-            }
-
-            messages = [...messages, data];
-
-        };
-
-        socket.onclose = () => {
-            console.log("WebSocket closed");
-        };
-
-        if (!socket.CONNECTING){
-            console.log();
-        }
-
-        return () => {
-            socket?.close();
-        };
-    })
-
-    function sendMessage(msg) {
-        if (socket && socket.readyState === WebSocket.OPEN) {
-            msg = input; // Temp
-            socket.send(msg);
-            input = '';
-        }
-    }
-
-    function printMessages(){
-        messages.forEach(element => {
-            console.log(element);
-        });
-        
-    }
+  function printMessages() {
+    messages.forEach((element) => {
+      console.log(element);
+    });
+  }
 </script>
 
-<input bind:value={input} placeholder="Введите сообщение..." />
-<button onclick={sendMessage}>Отправить</button>
-
-<button onclick={printMessages}>Вывести сообщения в консоль</button>
+<button onclick={checkUpdates}>Проверить наличие обновлений</button>
 
 <style>
-
 </style>
+
