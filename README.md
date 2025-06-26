@@ -1,3 +1,9 @@
+**For build**
+**npm run build**
+**npm run dist:win**
+**or**
+**npm run dist:linux**
+
 # Svelte + Vite
 
 This template should help get you started developing with Svelte in Vite.
