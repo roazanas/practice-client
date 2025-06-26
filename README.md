@@ -1,8 +1,8 @@
-**For build**
-**npm run build**
-**npm run dist:win**
-**or**
-**npm run dist:linux**
+#**For build**
+#**npm run build**
+#**npm run dist:win**
+#**or**
+#**npm run dist:linux**
 
 # Svelte + Vite
 
