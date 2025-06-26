@@ -69,5 +69,6 @@
 <button onclick={checkUpdates}>Проверить наличие обновлений</button>
 
 <style>
+
 </style>
 

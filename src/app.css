@@ -1,6 +1,6 @@
 @font-face {
   font-family: Montserrat;
-  src: url(./src/assets/fonts/Montserrat-VariableFont_wght.ttf);
+  src: url(./src/assets/fonts/Montserrat-VariableFont_wght.ttf)  format('truetype');
 }
 
 :root {
@@ -25,6 +25,7 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background-color: #242424;
 }
 
 h1 {

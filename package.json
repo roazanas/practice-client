@@ -1,15 +1,64 @@
 {
-  "name": "vite-project",
+  "name": "browser-info",
+  "description": "App for checking your browser info",
+  "author": "roazanas, echo1",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "build": {
+    "appId": "BrowserInfoId",
+    "productName": "BrowserInfo",
+    "directories": {
+      "buildResources": "src/assets",
+      "output": "dist"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/main.cjs",
+      "index.js",
+      "package.json",
+      "src/assets/fonts/**/*"
+    ],
+    "extraMetadata": {
+      "main": "electron/main.cjs"
+    },
+    "win": {
+      "target": [{
+        "target": "nsis",
+        "arch": ["x64"]
+      }],
+      "icon": "src/assets/heart.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb",
+        "rpm"
+      ],
+      "icon": "src/assets/heart.png",
+      "category": "Utility"
+    }
+  },
   "scripts": {
     "dev": "vite",
+    "electron": "electron electron/main.cjs",
+    "electron-dev": "concurrently \"npm run dev\" \"wait-on http://localhost:5173 && electron electron/main.cjs\"",
+    "dist": "npm run build && electron-builder",
+    "dist:win": "npm run build && electron-builder --win",
+    "dist:linux": "npm run build && electron-builder --linux",
+    "dist:all": "npm run build && electron-builder --win --linux",
     "build": "vite build",
     "preview": "vite preview"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^5.0.3",
+    "concurrently": "^9.2.0",
+    "electron": "^37.1.0",
+    "electron-builder": "^26.0.12",
     "svelte": "^5.28.1",
     "vite": "^6.3.5"
   },
