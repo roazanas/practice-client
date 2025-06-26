@@ -1,7 +1,10 @@
 {
   "name": "browser-info",
   "description": "App for checking your browser info",
-  "author": "roazanas, echo1",
+  "author": {
+    "name": "roazanas, echo1",
+    "email": "practice@rznz.ru"
+  },
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -36,10 +39,9 @@
     "linux": {
       "target": [
         "AppImage",
-        "deb",
-        "rpm"
+        "deb"
       ],
-      "icon": "src/assets/heart.png",
+      "icon": "src/assets/heart-256.png",
       "category": "Utility"
     }
   },
