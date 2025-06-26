@@ -5,19 +5,18 @@
   let updateIsReady = $state(false);
 
   let myVersion = "1.0.0"; // Из файла
-  let hash_from = "83b67cb"; // временная затычка, потом брать из git rev-parse HEAD
 
-  function checkUpdates(hash_from) {
-    const message = JSON.stringify({ type: "check-update", hash_from });
+  function checkUpdates() {
+    const message = JSON.stringify({ type: "check-update" });
     sendMessage(message);
 
     // ...
     // updateIsReady = брать из статуса в msg
-    updateIsReady = true;
+    // updateIsReady = message.status;
   }
 
-  function installUpdates(hash_from) {
-    const message = JSON.stringify({ type: "get-update", hash_from });
+  function installUpdates() {
+    const message = JSON.stringify({ type: "get-update" });
     sendMessage(message);
   }
 
@@ -27,9 +26,9 @@
     socket.onopen = () => {
       console.log("WebSocket connected");
 
-      checkUpdates(hash_from);
+      checkUpdates();
       if (updateIsReady) {
-        installUpdates(hash_from);
+        installUpdates();
       }
     };
 
