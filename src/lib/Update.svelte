@@ -4,31 +4,15 @@
   let input = $state("");
   let updateIsReady = $state(false);
 
-  let myVersion = "1.0.0"; // Из файла
-
-  function checkUpdates() {
-    const message = JSON.stringify({ type: "check-update" });
-    sendMessage(message);
-
-    // ...
-    // updateIsReady = брать из статуса в msg
-    // updateIsReady = message.status;
-  }
-
-  function installUpdates() {
-    const message = JSON.stringify({ type: "get-update" });
-    sendMessage(message);
-  }
-
   $effect(() => {
     socket = new WebSocket("ws://localhost:8000/ws");
 
     socket.onopen = () => {
       console.log("WebSocket connected");
 
-      checkUpdates();
+      // checkUpdates();
       if (updateIsReady) {
-        installUpdates();
+        // installUpdates();
       }
     };
 
@@ -66,7 +50,7 @@
   }
 </script>
 
-<button onclick={checkUpdates}>Проверить наличие обновлений</button>
+<button onclick={printMessages}>Проверить наличие обновлений</button>
 
 <style>
 
