@@ -27,7 +27,7 @@
     ],
     "files": [
       "dist/**/*",
-      "electron/main.cjs",
+      "electron/**/*",
       "index.js",
       "package.json",
       "src/assets/fonts/**/*"
