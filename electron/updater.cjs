@@ -1,4 +1,5 @@
-const { app, autoUpdater, Notification, dialog } = require('electron');
+const { app, Notification, dialog } = require('electron'); //, autoUpdater
+const { autoUpdater } = require('electron-updater');  // <-- вот так
 const WebSocket = require('ws');
 const Logger = require('./logger.cjs');
 const { COMPUTER_NAME, APP_VERSION, isDev } = require('./constants.cjs');
@@ -89,10 +90,10 @@ autoUpdater.on('update-downloaded', async (info) => {
 // Проверка обновлений
 async function checkForUpdates() {
   try {
-    if (isDev) {
-      Logger.info('Development mode - skipping update check');
-      return;
-    }
+    // if (isDev) {
+    //   Logger.info('Development mode - skipping update check');
+    //   return;
+    // }
 
     await autoUpdater.checkForUpdatesAndNotify();
   } catch (error) {

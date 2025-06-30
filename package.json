@@ -18,11 +18,11 @@
     "publish": [
       {
         "provider": "generic",
-        "url": "https://localhost:8000/updates/win/"
+        "url": "http://localhost:8000/updates/win/"
       },
       {
         "provider": "generic",
-        "url": "https://localhost:8000/updates/linux/"
+        "url": "http://localhost:8000/updates/linux/"
       }
     ],
     "files": [

@@ -4,26 +4,25 @@ const constants = require('./constants.cjs');
 const Logger = require('./logger.cjs');
 const { UpdateStatusManager, checkForUpdates } = require('./updater.cjs');
 const { connectWebSocket } = require('./websocket.cjs');
+const { version } = require('os');
 require('./ipc.cjs');
-
-if (constants.isDev) {
-  const feedUrl = getPlatformUpdateUrl(constants.UPDATE_SERVER_URL);
-  autoUpdater.setFeedURL({
-    provider: 'generic',
-    url: feedUrl
-  });
-}
 
 function getPlatformUpdateUrl(baseUrl) {
   switch (process.platform) {
     case 'win32':
-      return `${baseUrl}/win`;
+      return `${baseUrl}/win/`;
     case 'linux':
-      return `${baseUrl}/linux`;
+      return `${baseUrl}/linux/`;
     default:
       return baseUrl;
   }
 }
+
+const feedUrl = getPlatformUpdateUrl(constants.UPDATE_SERVER_URL);
+autoUpdater.setFeedURL({
+  provider: 'generic',
+  url: feedUrl
+});
 
 // Окно
 //
@@ -34,6 +33,7 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
+      preload: path.join(__dirname, 'preload.cjs')
     },
     autoHideMenuBar: true,
   });
