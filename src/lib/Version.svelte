@@ -11,7 +11,7 @@
   });
 </script>
 
-<div class="version">v {$version}</div>
+<div class="version">{$version}</div>
 
 <style>
   .version {
