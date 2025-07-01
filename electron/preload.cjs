@@ -1,14 +1,18 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
-  getAppVersion: () => ipcRenderer.invoke('get-app-version'),
-  getComputerName: () => ipcRenderer.invoke('get-computer-name'),
-  getOsInfo: () => ipcRenderer.invoke('get-os-info'),
-  checkUpdates: () => ipcRenderer.invoke('check-updates'),
-  log: (level, message) => ipcRenderer.invoke('log', level, message),
-  sendLog: (level, message) => ipcRenderer.send('log-message', { level, message })
+  sendLog: (level, message) => ipcRenderer.send('log-message', { level, message }),
+  
+  websocketSend: (data) => ipcRenderer.invoke('websocket-send', data),
+  websocketStatus: () => ipcRenderer.invoke('websocket-status'),
+  
+  // Подписка на события WebSocket
+  onWebSocketConnected: (callback) => ipcRenderer.on('websocket-connected', callback),
+  onWebSocketDisconnected: (callback) => ipcRenderer.on('websocket-disconnected', callback),
+  onWebSocketError: (callback) => ipcRenderer.on('websocket-error', callback),
+  onAuthResponse: (callback) => ipcRenderer.on('auth-response', callback),
+  onWebSocketMessage: (callback) => ipcRenderer.on('websocket-message', callback),
+  
+  // Методы для отписки
+  removeWebSocketListeners: (channel) => ipcRenderer.removeAllListeners(channel),
 });
-
-// module.exports = {
-//   contextBridge
-// };

@@ -1,39 +1,77 @@
 <script>
+// @ts-nocheck
+
   import { push } from "svelte-spa-router";
   import Version from "./Version.svelte";
+  import { onMount, onDestroy } from 'svelte';
 
-  let login = $state("");
-  let password = $state("");
-  let repPassword = $state("");
-  let ws;
-  let reconnectInterval = null;
+  let login = '';
+  let password = '';
+  let repPassword = '';
+  let isLoading = false;
+  let isConnected = false;
+  let msg = '';
 
-  // Чтобы передавать в electron-logger log сообщение, в main.cjs идёт их обработка
+  // Функция логирования
   function logSomething(lvl, msg) {
-    // @ts-ignore
     window.electronAPI.sendLog(lvl, msg);
   }
 
-  let msg = $state("");
-
-  function userRegistration(websocket) {
-    const payload = JSON.stringify({
-      type: "registration",
-      login,
-      password,
-    });
-    websocket.send(payload);
+  function handleRegistrationResponse(event, data) {
+    isLoading = false;
+    if (data && data.type === 'registration') {
+      if (data.success) {
+        logSomething('INFO', `User "${login}" successfully registered`);
+        push('/login');
+      } else {
+        logSomething('WARN', `Registration failed: user "${login}" already exists`);
+        alert('Пользователь с таким логином уже существует');
+        login = '';
+      }
+    }
   }
 
-  function scheduleReconnect() {
-    if (reconnectInterval) return;
-    reconnectInterval = setInterval(() => {
-      logSomething("INFO", `Login error Attempting to reconnect WebSocket...`);
-      userRegistration(ws);
-    }, 10 * 1000);
+  function handleConnected() {
+    isConnected = true;
+    logSomething('INFO', 'WebSocket connected');
   }
 
-  function correctPass(event) {
+  function handleDisconnected() {
+    isConnected = false;
+    isLoading = false;
+    logSomething('WARN', 'WebSocket disconnected');
+  }
+
+  function handleError(event, data) {
+    isConnected = false;
+    isLoading = false;
+    logSomething('ERROR', `WebSocket error: ${data?.error || 'Unknown error'}`);
+  }
+
+  // Подписываемся на события при монтировании
+  // Когда окно регистрации отобразилось
+  onMount(async () => {
+    // Проверяем текущий статус подключения
+    const status = await window.electronAPI.websocketStatus();
+    isConnected = status.connected;
+
+    // Подписываемся на события
+    window.electronAPI.onWebSocketConnected(handleConnected);
+    window.electronAPI.onWebSocketDisconnected(handleDisconnected);
+    window.electronAPI.onWebSocketError(handleError);
+    window.electronAPI.onWebSocketMessage(handleRegistrationResponse);
+  });
+
+  // Отписываемся при размонтировании
+  // Когда уходим со страницы регистрации
+  onDestroy(() => {
+    window.electronAPI.removeWebSocketListeners('websocket-connected');
+    window.electronAPI.removeWebSocketListeners('websocket-disconnected');
+    window.electronAPI.removeWebSocketListeners('websocket-error');
+    window.electronAPI.removeWebSocketListeners('websocket-message');
+  });
+
+  async function correctPass(event) {
     event.preventDefault();
 
     if (String(repPassword) !== String(password)) {
@@ -43,36 +81,25 @@
       msg = "";
     }
 
-    if (!ws || ws.readyState !== WebSocket.OPEN) {
-      ws = new WebSocket("ws://localhost:8000/ws");
+    isLoading = true;
 
-      ws.onopen = () => {
-        userRegistration(ws);
-      };
+    // Отправляем запрос регистрации через main процесс
+    const result = await window.electronAPI.websocketSend({
+      type: 'registration',
+      login,
+      password
+    });
 
-      ws.onmessage = async (event) => {
-        const data = JSON.parse(event.data);
-        if (data.type === "registration" && data.info === "success") {
-          push("/login");
-        } else if (data.type === "registration" && data.info === "login") {
-          alert("Пользователь с таким логином уже существует");
-          login = "";
-        }
-      };
-
-      ws.onerror = (error) => {
-        logSomething("ERROR", `WebSocket error: ${error.type}`);
-        scheduleReconnect();
-      };
-
-      ws.onclose = () => {
-        logSomething(
-          "WARN",
-          "WebSocket connection closed, attempting to reconnect...",
-        );
-        scheduleReconnect();
-      };
+    if (!result.success) {
+      isLoading = false;
+      alert('Ошибка подключения к серверу');
+      logSomething('ERROR', result.error || 'Failed to send registration request');
     }
+    // Ответ придет через событие 'websocket-message'
+  }
+
+  function goToLogin() {
+    push('/login');
   }
 </script>
 

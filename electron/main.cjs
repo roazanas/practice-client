@@ -1,10 +1,12 @@
 const { app, BrowserWindow, autoUpdater, ipcMain } = require('electron');
 const path = require('path');
+
 const constants = require('./constants.cjs');
 const Logger = require('./logger.cjs');
 const { UpdateStatusManager, checkForUpdates } = require('./updater.cjs');
 const { connectWebSocket } = require('./websocket.cjs');
 const { version } = require('os');
+const { disconnect } = require('./websocket.cjs');
 require('./ipc.cjs');
 
 ipcMain.on('log-message', (event, { level, message }) => {
@@ -90,4 +92,7 @@ app.on('activate', () => {
 app.on('before-quit', async () => {
   await Logger.info('Application shutting down');
   await UpdateStatusManager.updateStatus('stopped');
+  
+  // Закрываем WebSocket соединение
+  disconnect();
 });

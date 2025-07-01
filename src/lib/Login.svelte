@@ -1,109 +1,147 @@
 <script>
-  import { auth } from "../store.js";
-  import { push } from "svelte-spa-router";
-  import Version from "./Version.svelte";
-  // import WebSocket from 'ws';
+// @ts-nocheck
 
-  let login = "";
-  let password = "";
-  let ws = new WebSocket("ws://localhost:8000/ws");
-  let reconnectInterval = null;
+  import { auth } from '../store.js';
+  import Version from './Version.svelte';
+  import { push } from 'svelte-spa-router';
+  import { onMount, onDestroy } from 'svelte';
 
-  // Чтобы передавать в electron-logger log сообщение, в main.cjs идёт их обработка
+  let login = '';
+  let password = '';
+  let isLoading = false;
+  let isConnected = false;
+
+  // Функция логирования
   function logSomething(lvl, msg) {
-    // @ts-ignore
     window.electronAPI.sendLog(lvl, msg);
   }
 
-  function sendLogin(websocket) {
-    const payload = JSON.stringify({
-      type: "auth",
-      login,
-      password,
-    });
-    websocket.send(payload);
-  }
-
-  function scheduleReconnect() {
-    if (reconnectInterval) return;
-    reconnectInterval = setInterval(() => {
-      logSomething("INFO", "Login error Attempting to reconnect WebSocket...");
-      sendLogin(ws);
-    }, 10 * 1000);
-  }
-
-  function applyLogin(event) {
-    event.preventDefault();
-
-    if (!ws || ws.readyState !== WebSocket.OPEN) {
-      ws = new WebSocket("ws://localhost:8000/ws");
-
-      ws.onopen = () => {
-        sendLogin(ws);
-      };
-
-      ws.onmessage = async (event) => {
-        const data = JSON.parse(event.data);
-        if (data.type === "auth" && data.success) {
-          auth.login();
-          push("/");
-        } else {
-          alert("Неверный логин или пароль");
-        }
-      };
-
-      ws.onerror = (error) => {
-        logSomething("ERROR", `WebSocket error: ${error}`);
-        scheduleReconnect();
-      };
-
-      ws.onclose = () => {
-        logSomething(
-          "WARN",
-          "WebSocket connection closed, attempting to reconnect...",
-        );
-        scheduleReconnect();
-      };
+  // Обработчики событий
+  function handleAuthResponse(event, data) {
+    isLoading = false;
+    if (data && data.success) {
+      auth.login();
+      push('/');
+    } else {
+      alert('Неверный логин или пароль');
     }
   }
 
+  function handleConnected() {
+    isConnected = true;
+    logSomething('INFO', 'WebSocket connected');
+  }
+
+  function handleDisconnected() {
+    isConnected = false;
+    isLoading = false;
+    logSomething('WARN', 'WebSocket disconnected');
+  }
+
+  function handleError(event, data) {
+    isConnected = false;
+    isLoading = false;
+    logSomething('ERROR', `WebSocket error: ${data?.error || 'Unknown error'}`);
+  }
+
+  // Подписываемся на события при монтировании
+  onMount(async () => {
+    // Проверяем текущий статус подключения
+    const status = await window.electronAPI.websocketStatus();
+    isConnected = status.connected;
+
+    // Подписываемся на события
+    window.electronAPI.onWebSocketConnected(handleConnected);
+    window.electronAPI.onWebSocketDisconnected(handleDisconnected);
+    window.electronAPI.onWebSocketError(handleError);
+    window.electronAPI.onAuthResponse(handleAuthResponse);
+  });
+
+  // Отписываемся при размонтировании
+  onDestroy(() => {
+    window.electronAPI.removeWebSocketListeners('websocket-connected');
+    window.electronAPI.removeWebSocketListeners('websocket-disconnected');
+    window.electronAPI.removeWebSocketListeners('websocket-error');
+    window.electronAPI.removeWebSocketListeners('auth-response');
+  });
+
+  async function applyLogin(event) {
+    event.preventDefault();
+    
+    if (!login || !password) {
+      alert('Заполните все поля');
+      return;
+    }
+
+    isLoading = true;
+
+    // Отправляем запрос аутентификации через main процесс
+    const result = await window.electronAPI.websocketSend({
+      type: 'auth',
+      login,
+      password
+    });
+
+    if (!result.success) {
+      isLoading = false;
+      alert('Ошибка подключения к серверу');
+      logSomething('ERROR', result.error || 'Failed to send auth request');
+    }
+    // Ответ придет через событие 'auth-response'
+  }
+
   function goToRegister() {
-    push("/register");
+    push('/register');
   }
 </script>
 
 <h1 id="login-text">Login form</h1>
 <div class="login-form">
-  <form onsubmit={applyLogin}>
-    <div class="label-input">
-      <label for="login" class="input-label">Login</label>
-      <input
-        type="text"
-        name="login"
-        bind:value={login}
-        id="login"
-        class="input-line"
-      />
-    </div>
+    <form onsubmit="{applyLogin}">
+        <div class="label-input">
+            <label for="login" class="input-label">Login</label>
+            <input 
+              type="text" 
+              name="login" 
+              bind:value={login} 
+              id="login" 
+              class="input-line"
+              disabled={isLoading}
+            >
+        </div>
+        
+        <div class="label-input">
+            <label for="password" class="input-label">Password</label>
+            <input 
+              type="password" 
+              name="password" 
+              bind:value={password} 
+              id="password" 
+              class="input-line"
+              disabled={isLoading}
+            >
+        </div>
 
-    <div class="label-input">
-      <label for="password" class="input-label">Password</label>
-      <input
-        type="password"
-        name="password"
-        bind:value={password}
-        id="password"
-        class="input-line"
-      />
-    </div>
+        <div class="buttons-container">
+            <button type="submit" id="login-button" disabled={isLoading || !isConnected}>
+              {#if isLoading}
+                Авторизация...
+              {:else if !isConnected}
+                Подключение к серверу...
+              {:else}
+                Sign in
+              {/if}
+            </button>
+            <button type="button" id="register-button" onclick="{goToRegister}" disabled={isLoading}>
+                Don't have an account? Sign up
+            </button>
+        </div>
+    </form>   
+</div>
 
-    <div class="buttons-container">
-      <button type="submit" id="login-button">Sign in</button>
-      <button type="button" id="register-button" onclick={goToRegister}>
-        Don't have an account? Sign up
-      </button>
-    </div>
-  </form>
+<!-- Индикатор подключения -->
+<div class="connection-status" class:connected={isConnected}>
+  {isConnected ? '🟢 Подключено' : '🔴 Не подключено'}
 </div>
 
 <Version />
