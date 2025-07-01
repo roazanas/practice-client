@@ -53,6 +53,4 @@
 <button onclick={printMessages}>Проверить наличие обновлений</button>
 
 <style>
-
 </style>
-

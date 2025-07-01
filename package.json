@@ -6,7 +6,7 @@
     "email": "practice@rznz.ru"
   },
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "build": {
     "appId": "BrowserInfoId",
@@ -15,16 +15,6 @@
       "buildResources": "src/assets",
       "output": "dist"
     },
-    "publish": [
-      {
-        "provider": "generic",
-        "url": "http://localhost:8000/updates/win/"
-      },
-      {
-        "provider": "generic",
-        "url": "http://localhost:8000/updates/linux/"
-      }
-    ],
     "files": [
       "dist/**/*",
       "electron/**/*",
@@ -44,7 +34,13 @@
           ]
         }
       ],
-      "icon": "src/assets/heart.ico"
+      "icon": "src/assets/heart.ico",
+      "publish": [
+        {
+          "provider": "generic",
+          "url": "http://localhost:8000/updates/win/"
+        }
+      ]
     },
     "nsis": {
       "oneClick": false,
@@ -52,11 +48,16 @@
     },
     "linux": {
       "target": [
-        "AppImage",
-        "deb"
+        "AppImage"
       ],
       "icon": "src/assets/heart-256.png",
-      "category": "Utility"
+      "category": "Utility",
+      "publish": [
+        {
+          "provider": "generic",
+          "url": "http://localhost:8000/updates/linux/"
+        }
+      ]
     }
   },
   "scripts": {
