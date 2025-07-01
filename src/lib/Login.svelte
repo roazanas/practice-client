@@ -127,7 +127,7 @@
               {#if isLoading}
                 Авторизация...
               {:else if !isConnected}
-                Подключение к серверу...
+                Подключение...
               {:else}
                 Sign in
               {/if}
@@ -137,11 +137,6 @@
             </button>
         </div>
     </form>   
-</div>
-
-<!-- Индикатор подключения -->
-<div class="connection-status" class:connected={isConnected}>
-  {isConnected ? '🟢 Подключено' : '🔴 Не подключено'}
 </div>
 
 <Version />
