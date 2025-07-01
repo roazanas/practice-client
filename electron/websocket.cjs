@@ -15,10 +15,10 @@ function connectWebSocket() {
       Logger.info('WebSocket connected to server');
       
       const regMsg = JSON.stringify({ 
-        type: 'register', 
+        type: 'register_host', 
         computer_name: COMPUTER_NAME 
       });
-      console.log('Register message:', regMsg);
+      console.log('Register host message:', regMsg);
       ws.send(regMsg);
 
       // Если удалось подключиться, то прекращаем переподключение
