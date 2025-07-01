@@ -1,4 +1,4 @@
-const { app, BrowserWindow, autoUpdater } = require('electron');
+const { app, BrowserWindow, autoUpdater, ipcMain } = require('electron');
 const path = require('path');
 const constants = require('./constants.cjs');
 const Logger = require('./logger.cjs');
@@ -6,6 +6,12 @@ const { UpdateStatusManager, checkForUpdates } = require('./updater.cjs');
 const { connectWebSocket } = require('./websocket.cjs');
 const { version } = require('os');
 require('./ipc.cjs');
+
+ipcMain.on('log-message', (event, { level, message }) => {
+  if (level === 'INFO') Logger.info(message);
+  else if (level === 'WARN') Logger.warn(message);
+  else if (level === 'ERROR') Logger.error(message);
+});
 
 function getPlatformUpdateUrl(baseUrl) {
   switch (process.platform) {

@@ -6,8 +6,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getOsInfo: () => ipcRenderer.invoke('get-os-info'),
   checkUpdates: () => ipcRenderer.invoke('check-updates'),
   log: (level, message) => ipcRenderer.invoke('log', level, message),
+  sendLog: (level, message) => ipcRenderer.send('log-message', { level, message })
 });
 
-module.exports = {
-  contextBridge
-};
+// module.exports = {
+//   contextBridge
+// };

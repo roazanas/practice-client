@@ -1,10 +1,35 @@
 <script>
-  let browserInfo = $state(navigator.userAgent);
+  import { auth } from '../store.js';
+  import { push } from 'svelte-spa-router';
+  import { onDestroy } from 'svelte';
+
+  let isLoggedIn;
+
+  const unsubscribe = auth.subscribe(value => {
+    isLoggedIn = value;
+  });
+
+  function logout() {
+    auth.logout();
+    push('/login');
+  }
+
+  // если пользователь не залогинен — редирект на /login
+  if (isLoggedIn === false) {
+    push('/login');
+  }
+  
+  onDestroy(() => {
+    unsubscribe();
+  });
+
+  let browserInfo = navigator.userAgent;
 </script>
 
 <div class="info">
   <h1>Welcome!</h1>
-  <h2>{browserInfo}</h2>
+  <h1>{browserInfo}</h1>
+  <button onclick={logout} id="logout-button">Logout</button>
 </div>
 
 <style>

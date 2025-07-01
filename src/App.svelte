@@ -1,21 +1,13 @@
 <script>
-    import BrowserInfo from "./lib/BrowserInfo.svelte";
-    import Update from "./lib/Update.svelte";
-    import Login from "./lib/Login.svelte";
 
-    let isLoggedIn = false;
-
-    function onLoginSuccess() {
-        isLoggedIn = true;
-    }
+    import Router from 'svelte-spa-router';
+    import routes from './routes.js';
+    import { auth } from './store.js';
+    
+    auth.init();
 </script>
 
-{#if !isLoggedIn}
-  <Login on:LoginSuccess={onLoginSuccess}/>
-{:else}
-  <BrowserInfo />
-  <Update />
-{/if}
+    <Router {routes} />
 
 <style>
 </style>

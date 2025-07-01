@@ -78,5 +78,6 @@ function scheduleReconnect() {
 }
 
 module.exports = {
-  connectWebSocket
+  connectWebSocket,
+  scheduleReconnect
 };
