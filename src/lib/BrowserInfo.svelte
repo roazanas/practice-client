@@ -2,6 +2,7 @@
   import { auth } from "../store.js";
   import { push } from "svelte-spa-router";
   import { onDestroy } from "svelte";
+  import Version from "./Version.svelte";
 
   let isLoggedIn;
 
@@ -31,6 +32,8 @@
   <h1>{browserInfo}</h1>
   <button onclick={logout} id="logout-button">Logout</button>
 </div>
+
+<Version />
 
 <style>
   .info {

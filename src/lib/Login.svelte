@@ -1,6 +1,7 @@
 <script>
   import { auth } from "../store.js";
   import { push } from "svelte-spa-router";
+  import Version from "./Version.svelte";
   // import WebSocket from 'ws';
 
   let login = "";
@@ -104,6 +105,8 @@
     </div>
   </form>
 </div>
+
+<Version />
 
 <style>
   #login-text {

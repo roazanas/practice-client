@@ -1,5 +1,6 @@
 <script>
   import { push } from "svelte-spa-router";
+  import Version from "./Version.svelte";
 
   let login = $state("");
   let password = $state("");
@@ -117,6 +118,8 @@
   </form>
 </div>
 <b style="font-size: 24px; font-color: white;" class="info-msg">{msg}</b>
+
+<Version />
 
 <style>
   .info-msg {
