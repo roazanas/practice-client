@@ -1,4 +1,4 @@
-import { writable } from 'svelte/store';
+import { writable } from "svelte/store";
 
 function createAuthStore() {
   const { subscribe, set } = writable(false);
@@ -6,18 +6,19 @@ function createAuthStore() {
   return {
     subscribe,
     init() {
-      const stored = localStorage.getItem('isLoggedIn') === 'true';
+      const stored = localStorage.getItem("isLoggedIn") === "true";
       set(stored);
     },
     login() {
       set(true);
-      localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem("isLoggedIn", "true");
     },
     logout() {
       set(false);
-      localStorage.removeItem('isLoggedIn');
-    }
+      localStorage.removeItem("isLoggedIn");
+    },
   };
 }
 
 export const auth = createAuthStore();
+

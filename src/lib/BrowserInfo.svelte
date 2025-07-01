@@ -1,24 +1,24 @@
 <script>
-  import { auth } from '../store.js';
-  import { push } from 'svelte-spa-router';
-  import { onDestroy } from 'svelte';
+  import { auth } from "../store.js";
+  import { push } from "svelte-spa-router";
+  import { onDestroy } from "svelte";
 
   let isLoggedIn;
 
-  const unsubscribe = auth.subscribe(value => {
+  const unsubscribe = auth.subscribe((value) => {
     isLoggedIn = value;
   });
 
   function logout() {
     auth.logout();
-    push('/login');
+    push("/login");
   }
 
   // если пользователь не залогинен — редирект на /login
   if (isLoggedIn === false) {
-    push('/login');
+    push("/login");
   }
-  
+
   onDestroy(() => {
     unsubscribe();
   });
