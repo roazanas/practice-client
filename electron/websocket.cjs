@@ -39,7 +39,7 @@ function stopHeartbeat() {
 function scheduleReconnect() {
   if (reconnectInterval) return;
   
-  reconnectIntervaёl = setInterval(() => {
+  reconnectInterval = setInterval(() => {
     Logger.info('Attempting to reconnect WebSocket...');
     connectWebSocket();
   }, 10 * 1000);
@@ -98,7 +98,7 @@ function connectWebSocket() {
             break;
 
           case 'registration':
-            notifyRenderer('registration-response', message); // 👈 новый канал
+            notifyRenderer('registration-response', message);
             break;
 
           default:

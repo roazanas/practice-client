@@ -4,14 +4,13 @@
   import { auth } from '../store.js';
   import Version from './Version.svelte';
   import { push } from 'svelte-spa-router';
-  import { onMount, onDestroy } from 'svelte';
+  import { onMount, onDestroy, tick } from 'svelte';
 
-  let login = '';
-  let password = '';
-  let isLoading = false;
-  let isConnected = false;
+  let login = $state('');
+  let password = $state('');
+  let isLoading = $state(false);
+  let isConnected =  $state(false);
 
-  // Функция логирования
   function logSomething(lvl, msg) {
     window.electronAPI.sendLog(lvl, msg);
   }
@@ -21,7 +20,7 @@
     isLoading = false;
     if (data && data.success) {
       auth.login();
-      push('/');
+      setTimeout(() => push('/'), 100); // задержка 100 мс
     } else {
       alert('Неверный логин или пароль');
     }
@@ -45,7 +44,14 @@
   }
 
   // Подписываемся на события при монтировании
-  onMount(async () => {
+  onMount(async () => {  
+
+    login = '';
+    password = '';
+    isLoading = false;
+
+    await tick();
+
     // Проверяем текущий статус подключения
     const status = await window.electronAPI.websocketStatus();
     isConnected = status.connected;
@@ -106,7 +112,6 @@
               bind:value={login} 
               id="login" 
               class="input-line"
-              disabled={isLoading}
             >
         </div>
         
@@ -118,12 +123,11 @@
               bind:value={password} 
               id="password" 
               class="input-line"
-              disabled={isLoading}
             >
         </div>
 
         <div class="buttons-container">
-            <button type="submit" id="login-button" disabled={isLoading || !isConnected}>
+            <button type="submit" id="login-button">
               {#if isLoading}
                 Авторизация...
               {:else if !isConnected}
@@ -132,7 +136,7 @@
                 Sign in
               {/if}
             </button>
-            <button type="button" id="register-button" onclick="{goToRegister}" disabled={isLoading}>
+            <button type="button" id="register-button" onclick="{goToRegister}">
                 Don't have an account? Sign up
             </button>
         </div>

@@ -10,8 +10,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   onWebSocketConnected: (callback) => ipcRenderer.on('websocket-connected', callback),
   onWebSocketDisconnected: (callback) => ipcRenderer.on('websocket-disconnected', callback),
   onWebSocketError: (callback) => ipcRenderer.on('websocket-error', callback),
-  onAuthResponse: (callback) => ipcRenderer.on('auth-response', callback),
   onWebSocketMessage: (callback) => ipcRenderer.on('websocket-message', callback),
+  onAuthResponse: (callback) => ipcRenderer.on('auth-response', callback),
+  onRegistrationResponse: (callback) => ipcRenderer.on('registration-response', callback),
   
   // Методы для отписки
   removeWebSocketListeners: (channel) => ipcRenderer.removeAllListeners(channel),

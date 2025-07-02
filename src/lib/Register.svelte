@@ -22,7 +22,7 @@
     if (data && data.type === 'registration') {
       if (data.success) {
         logSomething('INFO', `User "${login}" successfully registered`);
-        push('/login');
+        setTimeout(() => push('/login'), 100); // задержка 100 мс
       } else {
         logSomething('WARN', `Registration failed: user "${login}" already exists`);
         alert('Пользователь с таким логином уже существует');
@@ -59,7 +59,7 @@
     window.electronAPI.onWebSocketConnected(handleConnected);
     window.electronAPI.onWebSocketDisconnected(handleDisconnected);
     window.electronAPI.onWebSocketError(handleError);
-    window.electronAPI.onWebSocketMessage(handleRegistrationResponse);
+    window.electronAPI.onRegistrationResponse(handleRegistrationResponse);
   });
 
   // Отписываемся при размонтировании
@@ -73,6 +73,11 @@
 
   async function correctPass(event) {
     event.preventDefault();
+    
+    if (!login || !password) {
+      alert('Заполните все поля');
+      return;
+    }
 
     if (String(repPassword) !== String(password)) {
       msg = "Entered passwords do not match";
