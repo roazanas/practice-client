@@ -5,12 +5,12 @@
   import Version from "./Version.svelte";
   import { onMount, onDestroy } from 'svelte';
 
-  let login = '';
-  let password = '';
-  let repPassword = '';
+  let login = $state('');
+  let password = $state('');
+  let repPassword = $state('');
   let isLoading = false;
   let isConnected = false;
-  let msg = '';
+  let msg = $state('');
 
   // Функция логирования
   function logSomething(lvl, msg) {
@@ -25,7 +25,7 @@
         setTimeout(() => push('/login'), 100); // задержка 100 мс
       } else {
         logSomething('WARN', `Registration failed: user "${login}" already exists`);
-        alert('Пользователь с таким логином уже существует');
+        msg = 'Пользователь с таким логином уже существует';
         login = '';
       }
     }
@@ -73,9 +73,9 @@
 
   async function correctPass(event) {
     event.preventDefault();
-    
+
     if (!login || !password) {
-      alert('Заполните все поля');
+      msg = 'Заполните все поля';
       return;
     }
 
@@ -97,7 +97,7 @@
 
     if (!result.success) {
       isLoading = false;
-      alert('Ошибка подключения к серверу');
+      msg = 'Ошибка подключения к серверу';
       logSomething('ERROR', result.error || 'Failed to send registration request');
     }
     // Ответ придет через событие 'websocket-message'
@@ -149,7 +149,7 @@
     <button id="reg-button">Sign up</button>
   </form>
 </div>
-<b style="font-size: 24px; font-color: white;" class="info-msg">{msg}</b>
+<b class="info-msg">{msg}</b>
 
 <Version />
 

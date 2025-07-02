@@ -11,6 +11,8 @@
   let isLoading = $state(false);
   let isConnected =  $state(false);
 
+  let msg = $state(''); // Вместо alert
+
   function logSomething(lvl, msg) {
     window.electronAPI.sendLog(lvl, msg);
   }
@@ -22,7 +24,7 @@
       auth.login();
       setTimeout(() => push('/'), 100); // задержка 100 мс
     } else {
-      alert('Неверный логин или пароль');
+      msg = 'Неверный логин или пароль';
     }
   }
 
@@ -75,7 +77,7 @@
     event.preventDefault();
     
     if (!login || !password) {
-      alert('Заполните все поля');
+      msg = 'Заполните все поля';
       return;
     }
 
@@ -90,7 +92,7 @@
 
     if (!result.success) {
       isLoading = false;
-      alert('Ошибка подключения к серверу');
+      msg = 'Ошибка подключения к серверу';
       logSomething('ERROR', result.error || 'Failed to send auth request');
     }
     // Ответ придет через событие 'auth-response'
@@ -142,10 +144,17 @@
         </div>
     </form>   
 </div>
+<b class="info-msg">{msg}</b>
 
 <Version />
 
 <style>
+
+  .info-msg {
+    font-size: 24px;
+    color: rgb(255, 255, 255);
+  }
+
   #login-text {
     color: rgb(200, 141, 255);
     margin-bottom: 40px;
