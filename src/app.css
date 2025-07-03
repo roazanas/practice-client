@@ -2,6 +2,9 @@
   font-family: Montserrat;
   src: url(./src/assets/fonts/Montserrat-VariableFont_wght.ttf)  format('truetype');
 }
+html{
+  overflow: hidden;
+}
 
 :root {
   font-family: Montserrat, system-ui, Avenir, Helvetica, Arial, sans-serif;

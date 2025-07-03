@@ -103,53 +103,57 @@
   }
 </script>
 
-<h1 id="login-text">Login form</h1>
-<div class="login-form">
-    <form onsubmit="{applyLogin}">
-        <div class="label-input">
-            <label for="login" class="input-label">Login</label>
-            <input 
-              type="text" 
-              name="login" 
-              bind:value={login} 
-              id="login" 
-              class="input-line"
-            >
-        </div>
-        
-        <div class="label-input">
-            <label for="password" class="input-label">Password</label>
-            <input 
-              type="password" 
-              name="password" 
-              bind:value={password} 
-              id="password" 
-              class="input-line"
-            >
-        </div>
-
-        <div class="buttons-container">
-            <button type="submit" id="login-button">
-              {#if isLoading}
-                Авторизация...
-              {:else if !isConnected}
-                Подключение...
-              {:else}
-                Sign in
-              {/if}
-            </button>
-            <button type="button" id="register-button" onclick="{goToRegister}">
-                Don't have an account? Sign up
-            </button>
-        </div>
-    </form>   
+<div class="login-content">
+  <h1 id="login-text">Login form</h1>
+  <div class="login-form">
+      <form onsubmit="{applyLogin}">
+          <div class="label-input">
+              <label for="login" class="input-label">Login</label>
+              <input 
+                type="text" 
+                name="login" 
+                bind:value={login} 
+                id="login" 
+                class="input-line"
+              >
+          </div>
+          
+          <div class="label-input">
+              <label for="password" class="input-label">Password</label>
+              <input 
+                type="password" 
+                name="password" 
+                bind:value={password} 
+                id="password" 
+                class="input-line"
+              >
+          </div>
+  
+          <div class="buttons-container">
+              <button type="submit" id="login-button">
+                {#if isLoading}
+                  Авторизация...
+                {:else if !isConnected}
+                  Подключение...
+                {:else}
+                  Sign in
+                {/if}
+              </button>
+              <button type="button" id="register-button" onclick="{goToRegister}">
+                  Don't have an account? Sign up
+              </button>
+          </div>
+      </form>   
+  </div>
+  <b class="info-msg">{msg}</b>
 </div>
-<b class="info-msg">{msg}</b>
 
 <Version />
 
 <style>
-
+  .login-content{
+    padding: 50px;
+  }
   .info-msg {
     font-size: 24px;
     color: rgb(255, 255, 255);
