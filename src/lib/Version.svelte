@@ -29,8 +29,8 @@
     position: absolute;
     z-index: 9999;
     margin-top: 10px;
-    left: 1%;
-    top: 94.5%;
+    left: 5px;
+    bottom: 5px;
     font-weight: bold;
     color: #e5e5e5;
     transition: color 0.2s ease;

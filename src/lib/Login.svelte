@@ -206,13 +206,14 @@
   }
 
   .login-form {
+    z-index: 1;
+    position: relative;
     width: 450px;
     height: 500px;
     margin: auto;
     background-color: rgb(216, 144, 255);
     border-radius: 40px;
     box-shadow: 0 0px 10px rgba(235, 133, 255, 0.301);
-
     display: flex;
     justify-content: center;
     align-items: center;
